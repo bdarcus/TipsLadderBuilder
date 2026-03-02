@@ -49,6 +49,7 @@ async function main() {
     const fs = await import('fs');
     const path = await import('path');
     const outPath = path.join(__dirname, 'data', 'TipsRef.csv');
+    fs.mkdirSync(path.dirname(outPath), { recursive: true });
     const header = 'cusip,maturity,datedDate,coupon,baseCpi,term';
     const lines = rows.map(r =>
       `${r.cusip},${r.maturity},${r.datedDate},${r.coupon},${r.baseCpi},${r.term}`

@@ -190,6 +190,7 @@ async function main() {
 
   // Write data/TipsYields.csv
   const outPath = path.join(__dirname, 'data', 'TipsYields.csv');
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
   const header = 'settlementDate,cusip,maturity,coupon,baseCpi,price,yield';
   const lines = rows.map(r =>
     `${r.settlementDate},${r.cusip},${r.maturity},${r.coupon},${r.baseCpi},${r.price},${r.yield}`

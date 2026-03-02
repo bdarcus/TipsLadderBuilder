@@ -49,6 +49,7 @@ async function main() {
     const fs   = await import('fs');
     const path = await import('path');
     const outPath = path.join(__dirname, 'data', 'RefCPI.csv');
+    fs.mkdirSync(path.dirname(outPath), { recursive: true });
     const header = 'date,refCpi';
     const lines = rows.map(r => `${r.date},${r.refCpi}`);
     fs.writeFileSync(outPath, [header, ...lines].join('\n') + '\n');
