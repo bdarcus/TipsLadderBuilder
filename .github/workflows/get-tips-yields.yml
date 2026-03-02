@@ -1,7 +1,7 @@
 name: Get TIPS Yields
 
 # FedInvest prices available ~1pm–5pm ET, Mon–Fri (non-holidays)
-# ET = UTC-5 (EST) or UTC-4 (EDT); 18:00–22:00 UTC covers both.
+# ET = UTC-5 (EST) or UTC-4 (EDT); 17:00–22:00 UTC covers both.
 # Adjust frequency below (currently every 30 minutes).
 # Note: GitHub Actions cron cannot skip holidays — runs will produce no change
 #       on holidays since FedInvest returns no data; the commit step is a no-op.
