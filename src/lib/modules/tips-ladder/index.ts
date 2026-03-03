@@ -8,6 +8,7 @@ import TipsIcon from './components/TipsIcon.svelte';
 import TipsConfig from './components/TipsConfig.svelte';
 import TipsDashboard from './components/TipsDashboard.svelte';
 import TipsAnalysis from './components/TipsAnalysis.svelte';
+import TipsImport from './components/TipsImport.svelte';
 
 /**
  * Implementation of the TIPS Ladder Module.
@@ -58,6 +59,7 @@ export const TipsLadderModule: FinancialModule<LadderState, any, any> = {
 		Icon: TipsIcon,
 		Config: TipsConfig,
 		Dashboard: TipsDashboard,
-		Analysis: TipsAnalysis
+		Analysis: TipsAnalysis,
+		Import: TipsImport
 	}
 };

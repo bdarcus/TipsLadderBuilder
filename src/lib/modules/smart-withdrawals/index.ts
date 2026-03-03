@@ -1,6 +1,6 @@
 import { derived, get } from 'svelte/store';
 import { withdrawalStore, type WithdrawalState } from './store/withdrawal';
-import { calculateYearsRemaining } from './engine/life-expectancy';
+import { calculateTargetHorizon, getTargetProbFromMargin } from './engine/life-expectancy';
 import { calculateConstantAmortization } from '../portfolio-manager/engine/amortization';
 import { registry } from '../../core/registry';
 import type { FinancialModule, ProjectionData } from '../../core/types';
@@ -25,16 +25,21 @@ export const SmartWithdrawalModule: FinancialModule<WithdrawalState, any, any> =
 		save: withdrawalStore.save,
 		load: withdrawalStore.load,
 		reset: withdrawalStore.reset,
-		publicData: derived([withdrawalStore], ([$state]) => ({
-			// Expose life expectancy for others
-			yearsRemaining: calculateYearsRemaining($state.people, $state.conservatismMargin)
-		}))
+		publicData: derived([withdrawalStore], ([$state]) => {
+			const targetProb = getTargetProbFromMargin($state.conservatismMargin);
+			const years = calculateTargetHorizon($state.people, targetProb);
+			return {
+				planningHorizonYears: years,
+				targetSurvivalProb: targetProb
+			};
+		})
 	},
 
 	engine: {
 		calculate: (params) => {
 			const state = get(withdrawalStore);
-			const yearsRemaining = calculateYearsRemaining(state.people, state.conservatismMargin);
+			const targetProb = getTargetProbFromMargin(state.conservatismMargin);
+			const yearsRemaining = calculateTargetHorizon(state.people, targetProb);
 
 			// Get data from other modules via the registry
 			const tipsModule = registry.getModule('tips-ladder');
@@ -55,12 +60,23 @@ export const SmartWithdrawalModule: FinancialModule<WithdrawalState, any, any> =
 				totalSpending: floor + upside,
 				floor,
 				upside,
-				yearsRemaining
+				yearsRemaining,
+				targetProb
 			};
 		},
 		project: (state): ProjectionData => {
-			// Cross-module projection logic would go here
-			return { years: [], values: [] };
+			// Spending projection
+			const calc = SmartWithdrawalModule.engine.calculate({});
+			const years: number[] = [];
+			const values: number[] = [];
+			const startYear = new Date().getFullYear();
+			
+			for (let i = 0; i < calc.yearsRemaining; i++) {
+				years.push(startYear + i);
+				values.push(calc.totalSpending);
+			}
+
+			return { years, values };
 		}
 	},
 

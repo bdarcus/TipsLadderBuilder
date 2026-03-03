@@ -1,29 +1,31 @@
-import { writable, derived, type Readable } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
 export interface MarketAssumptions {
-	equityReturn: number; // e.g., 0.06 for 6%
-	tipsReturn: number;   // e.g., 0.02 for 2%
-	inflation: number;    // e.g., 0.02 for 2%
-	updatedAt: string;    // YYYY-MM-DD
+	equityReturn: number;
+	tipsReturn: number;
+	inflation: number;
+	updatedAt: string;
 }
 
 export interface PortfolioState {
 	balance: number;
-	equityAllocation: number; // 0.0 to 1.0 (proxy for risk)
+	equityAllocation: number; // 0.0 to 1.0
 	marketAssumptions: MarketAssumptions;
 	retirementYear: number;
+	isLoaded: boolean;
 }
 
 const DEFAULT_STATE: PortfolioState = {
 	balance: 1000000,
-	equityAllocation: 0.6, // 60/40 default
+	equityAllocation: 0.6,
 	marketAssumptions: {
-		equityReturn: 0.055, // Elm Wealth-ish estimate
-		tipsReturn: 0.018,
-		inflation: 0.02,
+		equityReturn: 0.058,
+		tipsReturn: 0.019,
+		inflation: 0.021,
 		updatedAt: '2026-03-01'
 	},
-	retirementYear: 2045
+	retirementYear: 2055,
+	isLoaded: false
 };
 
 function createPortfolioStore() {
@@ -33,25 +35,45 @@ function createPortfolioStore() {
 		subscribe,
 		set,
 		update,
+		async fetchAssumptions() {
+			try {
+				const res = await fetch('/data/MarketAssumptions.json');
+				if (!res.ok) throw new Error('Failed to fetch assumptions');
+				const data = await res.json();
+				update(s => ({
+					...s,
+					marketAssumptions: {
+						equityReturn: data.assumptions.globalEquities.nominalReturn,
+						tipsReturn: data.assumptions.tips.realReturn, // We want the REAL return for TIPS
+						inflation: data.assumptions.inflation,
+						updatedAt: data.updatedAt
+					}
+				}));
+			} catch (e) {
+				console.warn('Using default assumptions:', e);
+			}
+		},
 		save: (state: PortfolioState) => {
 			if (typeof localStorage !== 'undefined') {
-				try { localStorage.setItem('portfolio_manager_state', JSON.stringify(state)); } catch (e) { console.warn('localStorage unavailable (save):', e); }
+				localStorage.setItem('portfolio_manager_state', JSON.stringify({ ...state, isLoaded: true }));
 			}
-			set(state);
+			set({ ...state, isLoaded: true });
 		},
 		load: () => {
 			if (typeof localStorage !== 'undefined') {
-				try {
-					const saved = localStorage.getItem('portfolio_manager_state');
-					if (saved) set(JSON.parse(saved));
-				} catch (e) { console.warn('localStorage unavailable (load):', e); }
+				const saved = localStorage.getItem('portfolio_manager_state');
+				if (saved) {
+					set({ ...JSON.parse(saved), isLoaded: true });
+					return;
+				}
 			}
+			set({ ...DEFAULT_STATE, isLoaded: true });
 		},
 		reset: () => {
 			if (typeof localStorage !== 'undefined') {
-				try { localStorage.removeItem('portfolio_manager_state'); } catch (e) { console.warn('localStorage unavailable (reset):', e); }
+				localStorage.removeItem('portfolio_manager_state');
 			}
-			set(DEFAULT_STATE);
+			set({ ...DEFAULT_STATE, isLoaded: true });
 		}
 	};
 }
@@ -59,12 +81,21 @@ function createPortfolioStore() {
 export const portfolioStore = createPortfolioStore();
 
 /**
- * Derived store that calculates the weighted expected real return based on asset allocation.
+ * Derived store that calculates the weighted expected REAL return.
+ * Logic: We combine nominal returns, then adjust for inflation.
  */
 export const expectedRealReturn = derived(portfolioStore, ($state) => {
-	const equ = $state.equityAllocation * $state.marketAssumptions.equityReturn;
-	const bond = (1 - $state.equityAllocation) * $state.marketAssumptions.tipsReturn;
-	// Simplification: (1+r_nom)/(1+infl) - 1. For small r, approx r_nom - infl.
-	const nominalReturn = equ + bond;
-	return (1 + nominalReturn) / (1 + $state.marketAssumptions.inflation) - 1;
+	const nominalEquity = $state.marketAssumptions.equityReturn;
+	const realTips = $state.marketAssumptions.tipsReturn;
+	const inflation = $state.marketAssumptions.inflation;
+
+	// Nominal return of the portfolio
+	// For equities, we have the nominal return.
+	// For TIPS, we have the REAL return, so nominal = (1+real)*(1+infl) - 1
+	const nominalTips = (1 + realTips) * (1 + inflation) - 1;
+	
+	const portfolioNominal = ($state.equityAllocation * nominalEquity) + ((1 - $state.equityAllocation) * nominalTips);
+	
+	// Real return = (1 + nominal) / (1 + inflation) - 1
+	return (1 + portfolioNominal) / (1 + inflation) - 1;
 });

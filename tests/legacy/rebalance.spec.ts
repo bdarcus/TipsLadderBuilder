@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { 
   runRebalance,
   localDate 
-} from '../../src/lib/engine/rebalance-engine.js';
+} from '../../src/lib/modules/tips-ladder/engine/rebalance-engine';
 
 // Helper to create a mock TIPS map
 function createMockTipsMap() {

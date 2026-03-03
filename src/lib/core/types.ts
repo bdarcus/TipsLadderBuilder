@@ -39,5 +39,6 @@ export interface FinancialModule<TState, TParams, TResult> {
 		Config: ComponentType;
 		Dashboard: ComponentType;
 		Analysis: ComponentType;
+		Import?: ComponentType;
 	};
 }

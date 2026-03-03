@@ -7,8 +7,7 @@ export interface HoldingRecord {
  * Parses a simple CSV with CUSIP, Qty
  */
 export function parseHoldingsCsv(text: string): HoldingRecord[] {
-	const lines = text.trim().split('
-').filter(l => l.trim());
+	const lines = text.trim().split('\n').filter(l => l.trim());
 	if (lines.length < 2) return [];
 
 	// Simple heuristic: find headers or assume CUSIP, Qty

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { registry } from '$lib';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import './layout.css';
 
 	let { children } = $props();
@@ -11,10 +13,20 @@
 	onMount(() => {
 		// Load all module states
 		modules.forEach(m => m.store.load());
+		
+		// Specifically for Portfolio module, fetch external assumptions
+		const portfolioModule = registry.getModule('portfolio-manager');
+		if (portfolioModule && 'fetchAssumptions' in portfolioModule.store) {
+			(portfolioModule.store as any).fetchAssumptions();
+		}
 	});
 
 	function setActive(id: string) {
 		registry.setActive(id);
+		// If we are on the home page, navigate to design view when selecting a module
+		if (page.url.pathname === '/') {
+			goto('/design');
+		}
 	}
 </script>
 

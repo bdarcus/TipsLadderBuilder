@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { localDate, toDateStr, yieldFromPrice, identifyBrackets } from './rebalance-engine.js';
+import { identifyBrackets } from './rebalance-engine';
+import { localDate, toDateStr } from '../../../shared/date';
+import { yieldFromPrice } from '../../../shared/financial';
 
 describe('rebalance-engine', () => {
 	it('identifies brackets correctly for a gap', () => {

@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { registry } from '$lib';
+	import { goto } from '$app/navigation';
 	
 	const modules = registry.getAllModules();
+
+	function manageModule(id: string) {
+		registry.setActive(id);
+		goto('/design');
+	}
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -19,7 +25,7 @@
 			</div>
 
 			<button 
-				onclick={() => registry.setActive(m.id)}
+				onclick={() => manageModule(m.id)}
 				class="w-full py-2 bg-slate-50 text-slate-600 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-colors font-medium text-sm"
 			>
 				Manage {m.name}

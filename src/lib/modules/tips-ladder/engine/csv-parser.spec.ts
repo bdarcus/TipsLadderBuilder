@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseHoldingsCsv } from './csv-parser';
+import { parseHoldingsCsv } from '../../../shared/csv';
 
 describe('csv-parser', () => {
 	it('parses standard CUSIP, Qty format', () => {

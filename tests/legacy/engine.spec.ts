@@ -4,7 +4,7 @@ import {
   toDateStr, 
   yieldFromPrice, 
   calculateMDuration 
-} from '../../src/lib/engine/rebalance-engine.js';
+} from '../../src/lib/modules/tips-ladder/engine/rebalance-engine';
 
 describe('Legacy Engine Tests', () => {
   it('Date helpers', () => {

@@ -1,4 +1,5 @@
-import { buildTipsMapFromYields, localDate } from './rebalance-engine.js';
+import { buildTipsMapFromYields } from './rebalance-engine';
+import { localDate } from '../../../shared/date';
 
 export interface MarketData {
 	tipsMap: Map<string, any>;
