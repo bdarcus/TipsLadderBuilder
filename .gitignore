@@ -4,6 +4,10 @@ appsscript/
 # Auto-memory (Claude Code internal)
 memory/
 
+# Node.js
+node_modules/
+package-lock.json
+
 # Data — only the 3 auto-updated reference CSVs are tracked
 data/*
 !data/TipsYields.csv
