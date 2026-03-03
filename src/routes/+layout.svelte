@@ -61,7 +61,8 @@
 						{/each}
 					</div>
 				</div>
-				<div class="flex items-center space-x-4">
+				<div class="flex items-center space-x-6">
+					<a href="/resources" class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors">Resources</a>
 					<div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Modular Platform</div>
 				</div>
 			</div>
@@ -74,11 +75,37 @@
 			<!-- Show the active module's name at the top -->
 			{#if $activeModuleId}
 				{@const activeModule = modules.find(m => m.id === $activeModuleId)}
-				<div class="mb-8 flex items-center justify-between">
+				<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
 					<div>
 						<h1 class="text-3xl font-serif font-bold text-slate-900">{activeModule?.name}</h1>
 						<p class="text-slate-500 mt-1">{activeModule?.description}</p>
 					</div>
+
+					<!-- View Switcher -->
+					{#if page.url.pathname !== '/'}
+						<div class="flex bg-slate-200/50 p-1 rounded-xl self-start md:self-end">
+							<a 
+								href="/design" 
+								class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all {page.url.pathname === '/design' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}"
+							>
+								Design
+							</a>
+							<a 
+								href="/track" 
+								class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all {page.url.pathname === '/track' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}"
+							>
+								Track
+							</a>
+							{#if activeModule?.ui.Import}
+								<a 
+									href="/import" 
+									class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all {page.url.pathname === '/import' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}"
+								>
+									Import
+								</a>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			{/if}
 

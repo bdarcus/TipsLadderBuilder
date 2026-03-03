@@ -63,8 +63,8 @@
 				</p>
 				
 				<div class="pt-4 flex flex-wrap gap-4">
-					<button onclick={() => manageModule('smart-withdrawals')} class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg">Adjust Plan</button>
-					<button onclick={() => manageModule('tips-ladder')} class="px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors">Refine Ladder</button>
+					<button onclick={() => manageModule('smart-withdrawals')} class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg">Optimize Spending</button>
+					<button onclick={() => manageModule('tips-ladder')} class="px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors">Adjust TIPS Floor</button>
 				</div>
 
 				<div class="pt-6 border-t border-slate-100 flex items-center space-x-6">
