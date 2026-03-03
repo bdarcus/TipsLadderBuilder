@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { runRebalance, toDateStr } from '$lib/engine/rebalance-engine.js';
-	import { fetchMarketData, type MarketData } from '$lib/engine/market-data';
+	import { fetchMarketData, getRefCpi, type MarketData } from '$lib/engine/market-data';
 	import { parseHoldingsCsv, type Holding } from '$lib/engine/csv-parser';
 	import { ladderStore } from '$lib/stores/ladder';
 	import { exportToCsv } from '$lib/engine/export';
@@ -49,13 +49,13 @@
 		try {
 			error = null;
 			const dateStr = toDateStr(marketData.settlementDate);
-			const refCPI = marketData.refCpiRows.find((r) => r.date <= dateStr)?.refCpi;
+			const refCPI = getRefCpi(marketData.refCpiRows, dateStr);
 			results = runRebalance({
 				dara: income,
 				method: 'Gap', // Use the core maintenance innovation
 				holdings,
 				tipsMap: marketData.tipsMap,
-				refCPI: refCPI!,
+				refCPI: refCPI,
 				settlementDate: marketData.settlementDate
 			});
 

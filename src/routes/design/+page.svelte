@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { runRebalance, toDateStr, localDate } from '$lib/engine/rebalance-engine.js';
-	import { fetchMarketData, type MarketData } from '$lib/engine/market-data';
+	import { fetchMarketData, getRefCpi, type MarketData } from '$lib/engine/market-data';
 	import { ladderStore } from '$lib/stores/ladder';
 	import { exportToCsv } from '$lib/engine/export';
 
@@ -45,7 +45,7 @@
 		try {
 			const sDate = getSettlementDate();
 			const dateStr = toDateStr(sDate);
-			const refCPI = marketData.refCpiRows.find((r) => r.date <= dateStr)?.refCpi || marketData.refCpiRows[0].refCpi;
+			const refCPI = getRefCpi(marketData.refCpiRows, dateStr);
 			const res = runRebalance({
 				dara: income,
 				method: 'Full',
@@ -71,7 +71,7 @@
 			error = null;
 			const sDate = getSettlementDate();
 			const dateStr = toDateStr(sDate);
-			const refCPI = marketData.refCpiRows.find((r) => r.date <= dateStr)?.refCpi || marketData.refCpiRows[0].refCpi;
+			const refCPI = getRefCpi(marketData.refCpiRows, dateStr);
 			results = runRebalance({
 				dara: income,
 				method: 'Full',

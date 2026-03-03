@@ -38,7 +38,7 @@
 	<section class="space-y-6">
 		<h3 class="font-serif text-2xl font-bold text-slate-900 px-2">Recommended Reading & Tools</h3>
 		<div class="grid grid-cols-1 gap-4">
-			<a href="https://www.bogleheads.org/forum/viewtopic.php?t=394380" target="_blank" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
+			<a href="https://www.bogleheads.org/forum/viewtopic.php?t=394380" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
 				<div class="space-y-1">
 					<div class="text-sm font-black uppercase tracking-widest text-emerald-600">Bogleheads</div>
 					<div class="font-bold text-slate-900">The TIPS Ladder Discussion Thread</div>
@@ -47,7 +47,7 @@
 				<span class="text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">→</span>
 			</a>
 
-			<a href="https://robberger.com/tools/tips-ladder/" target="_blank" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
+			<a href="https://robberger.com/tools/tips-ladder/" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
 				<div class="space-y-1">
 					<div class="text-sm font-black uppercase tracking-widest text-emerald-600">Rob Berger</div>
 					<div class="font-bold text-slate-900">Rob Berger's TIPS Ladder Tool Review</div>
@@ -56,7 +56,7 @@
 				<span class="text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">→</span>
 			</a>
 
-			<a href="https://tipswatch.com" target="_blank" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
+			<a href="https://tipswatch.com" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 transition-all group flex items-center justify-between">
 				<div class="space-y-1">
 					<div class="text-sm font-black uppercase tracking-widest text-emerald-600">TIPSWatch</div>
 					<div class="font-bold text-slate-900">David Enna's TIPSWatch Blog</div>

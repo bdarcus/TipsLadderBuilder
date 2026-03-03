@@ -42,7 +42,7 @@ npm run build
 The project includes a comprehensive test suite covering both the core math and the modern UI.
 
 - **Run All Tests**: `npm test`
-- **Run Legacy Engine Tests**: `node --test tests/legacy/*.js`
+- **Run Legacy Engine Tests**: run via Vitest with `npm test` (legacy specs in `tests/legacy/` are included in the Vitest suite).
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.

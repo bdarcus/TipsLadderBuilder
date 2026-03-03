@@ -24,22 +24,22 @@ function createLadderStore() {
 		set,
 		update,
 		save: (state: LadderState) => {
-			if (typeof window !== 'undefined' || typeof globalThis.localStorage !== 'undefined') {
-				localStorage.setItem('tips_ladder_state', JSON.stringify(state));
+			if (typeof localStorage !== 'undefined') {
+				try { localStorage.setItem('tips_ladder_state', JSON.stringify(state)); } catch (e) { console.warn('localStorage unavailable (save):', e); }
 			}
 			set(state);
 		},
 		load: () => {
-			if (typeof window !== 'undefined' || typeof globalThis.localStorage !== 'undefined') {
-				const saved = localStorage.getItem('tips_ladder_state');
-				if (saved) {
-					set(JSON.parse(saved));
-				}
+			if (typeof localStorage !== 'undefined') {
+				try {
+					const saved = localStorage.getItem('tips_ladder_state');
+					if (saved) set(JSON.parse(saved));
+				} catch (e) { console.warn('localStorage unavailable (load):', e); }
 			}
 		},
 		reset: () => {
-			if (typeof window !== 'undefined' || typeof globalThis.localStorage !== 'undefined') {
-				localStorage.removeItem('tips_ladder_state');
+			if (typeof localStorage !== 'undefined') {
+				try { localStorage.removeItem('tips_ladder_state'); } catch (e) { console.warn('localStorage unavailable (reset):', e); }
 			}
 			set(DEFAULT_STATE);
 		}

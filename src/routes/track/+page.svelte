@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ladderStore } from '$lib/stores/ladder';
-	import { fetchMarketData, type MarketData } from '$lib/engine/market-data';
+	import { fetchMarketData, getRefCpi, type MarketData } from '$lib/engine/market-data';
 	import { runRebalance, toDateStr } from '$lib/engine/rebalance-engine.js';
 	import { exportToCsv } from '$lib/engine/export';
 
@@ -31,14 +31,14 @@
 		}
 		try {
 			const dateStr = toDateStr(marketData.settlementDate);
-			const refCPI = marketData.refCpiRows.find((r) => r.date <= dateStr)?.refCpi;
+			const refCPI = getRefCpi(marketData.refCpiRows, dateStr);
 			console.log("Track: Running rebalance with", ladder.target.income, ladder.holdings.length);
 			const res = runRebalance({
 				dara: ladder.target.income,
 				method: 'Gap',
 				holdings: ladder.holdings,
 				tipsMap: marketData.tipsMap,
-				refCPI: refCPI!,
+				refCPI: refCPI,
 				settlementDate: marketData.settlementDate,
 				startYear: ladder.target.startYear,
 				endYear: ladder.target.endYear
@@ -105,13 +105,13 @@
 				<button 
 					onclick={() => {
 						const dateStr = toDateStr(marketData!.settlementDate);
-						const refCPI = marketData!.refCpiRows.find((r) => r.date <= dateStr)?.refCpi;
+						const refCPI = getRefCpi(marketData!.refCpiRows, dateStr);
 						const res = runRebalance({
 							dara: ladder.target!.income,
 							method: 'Gap',
 							holdings: ladder.holdings,
 							tipsMap: marketData!.tipsMap,
-							refCPI: refCPI!,
+							refCPI: refCPI,
 							settlementDate: marketData!.settlementDate
 						});
 						ladderStore.save({
@@ -127,14 +127,14 @@
 				<button 
 					onclick={() => {
 						const dateStr = toDateStr(marketData!.settlementDate);
-						const refCPI = marketData!.refCpiRows.find((r) => r.date <= dateStr)?.refCpi;
+						const refCPI = getRefCpi(marketData!.refCpiRows, dateStr);
 						const newEndYear = ladder.target!.endYear + 5;
 						const res = runRebalance({
 							dara: ladder.target!.income,
 							method: 'Gap',
 							holdings: ladder.holdings,
 							tipsMap: marketData!.tipsMap,
-							refCPI: refCPI!,
+							refCPI: refCPI,
 							settlementDate: marketData!.settlementDate,
 							endYear: newEndYear
 						});
