@@ -38,7 +38,7 @@
 		<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
 			<h3 class="font-serif text-xl font-bold">Projected Annual Spending (Real $)</h3>
 			<div class="flex flex-wrap gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-				<div class="flex items-center"><span class="w-3 h-3 bg-slate-900 rounded-full mr-2"></span> Safe Assets (TIPS)</div>
+				<div class="flex items-center"><span class="w-3 h-3 bg-indigo-600 rounded-full mr-2"></span> Safe Assets (TIPS)</div>
 				<div class="flex items-center"><span class="w-3 h-3 bg-emerald-500 rounded-full mr-2"></span> Passive Income</div>
 				<div class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> Portfolio Sales</div>
 			</div>
@@ -58,7 +58,7 @@
 						<div class="bg-emerald-500 w-full border-t border-white/10" 
 							style="height: {(y.passiveIncome / maxSpending) * 100}%"></div>
 						<!-- Safe Assets -->
-						<div class="bg-slate-900 w-full border-t border-white/10" 
+						<div class="bg-indigo-600 w-full border-t border-white/10" 
 							style="height: {(y.safeAssets / maxSpending) * 100}%"></div>
 						
 						{#if i % 5 === 0 || i === years.length - 1}

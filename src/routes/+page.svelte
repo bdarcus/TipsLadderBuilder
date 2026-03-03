@@ -28,7 +28,7 @@
 	let chartData = $derived.by(() => {
 		if (!summary) return [];
 		return [
-			{ label: 'Safe Assets', val: summary.safeAssets, color: 'bg-slate-900' },
+			{ label: 'Safe Assets', val: summary.safeAssets, color: 'bg-indigo-600' },
 			{ label: 'Passive Income', val: summary.passive, color: 'bg-emerald-500' },
 			{ label: 'Portfolio Sales', val: summary.sales, color: 'bg-blue-500' }
 		].filter(d => d.val > 0);
