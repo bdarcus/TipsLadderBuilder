@@ -1,6 +1,7 @@
 import { derived, get } from 'svelte/store';
 import { portfolioStore, expectedRealReturn, type PortfolioState } from './store/portfolio';
 import { calculateConstantAmortization, projectPortfolio } from './engine/amortization';
+import { planningHorizon } from '../../shared/planning';
 import type { FinancialModule, ProjectionData } from '../../core/types';
 
 // Placeholder components
@@ -33,15 +34,23 @@ export const TotalPortfolioModule: FinancialModule<PortfolioState, any, any> = {
 		calculate: (params) => {
 			const realRate = get(expectedRealReturn);
 			const state = get(portfolioStore);
-			const yearsRemaining = state.retirementYear - new Date().getFullYear();
+			const horizon = get(planningHorizon);
+			
+			const horizonYear = horizon.horizonYear;
+			const yearsRemaining = horizonYear - new Date().getFullYear();
+			
 			return {
 				amortizationIncome: calculateConstantAmortization(state.balance, realRate, Math.max(1, yearsRemaining)),
-				expectedRealReturn: realRate
+				expectedRealReturn: realRate,
+				horizonYear
 			};
 		},
 		project: (state): ProjectionData => {
 			const realRate = get(expectedRealReturn);
-			const yearsRemaining = Math.max(1, state.retirementYear - new Date().getFullYear());
+			const horizon = get(planningHorizon);
+			const horizonYear = horizon.horizonYear;
+			
+			const yearsRemaining = Math.max(1, horizonYear - new Date().getFullYear());
 			const income = calculateConstantAmortization(state.balance, realRate, yearsRemaining);
 			const balances = projectPortfolio(state.balance, realRate, yearsRemaining, income);
 			

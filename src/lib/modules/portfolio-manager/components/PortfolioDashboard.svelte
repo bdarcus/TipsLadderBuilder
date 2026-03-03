@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { portfolioStore, expectedRealReturn } from '../store/portfolio';
+	import { planningHorizon } from '../../../shared/planning';
 	import { formatCurrency } from '../../../shared/financial';
 	
 	let state = $derived($portfolioStore);
 	let realReturn = $derived($expectedRealReturn);
+	let horizon = $derived($planningHorizon);
 </script>
 
 <div class="space-y-3">
@@ -13,8 +15,8 @@
 			<div class="text-2xl font-serif font-bold text-slate-900">{formatCurrency(state.balance)}</div>
 		</div>
 		<div class="text-right">
-			<div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Real Return</div>
-			<div class="text-sm font-bold text-blue-600">{(realReturn * 100).toFixed(1)}%</div>
+			<div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Horizon</div>
+			<div class="text-sm font-bold text-blue-600">{horizon.horizonYear}</div>
 		</div>
 	</div>
 	

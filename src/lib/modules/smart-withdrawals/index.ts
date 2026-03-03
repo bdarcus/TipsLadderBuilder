@@ -1,6 +1,6 @@
 import { derived, get } from 'svelte/store';
 import { withdrawalStore, type WithdrawalState } from './store/withdrawal';
-import { calculateTargetHorizon, getTargetProbFromMargin } from './engine/life-expectancy';
+import { planningStore, planningHorizon } from '../../shared/planning';
 import { calculateConstantAmortization } from '../portfolio-manager/engine/amortization';
 import { registry } from '../../core/registry';
 import type { FinancialModule, ProjectionData } from '../../core/types';
@@ -15,31 +15,27 @@ import WithdrawalAnalysis from './components/WithdrawalAnalysis.svelte';
  * Implementation of the Smart Withdrawal Module (Merton-Inspired).
  * This module coordinates data from the TIPS and Portfolio modules.
  */
-export const SmartWithdrawalModule: FinancialModule<WithdrawalState, any, any> = {
+export const SmartWithdrawalModule: FinancialModule<any, any, any> = {
 	id: 'smart-withdrawals',
 	name: 'Smart Withdrawal',
 	description: 'Merton-inspired dynamic spending using joint life expectancy.',
 
 	store: {
-		subscribe: withdrawalStore.subscribe,
-		save: withdrawalStore.save,
-		load: withdrawalStore.load,
-		reset: withdrawalStore.reset,
-		publicData: derived([withdrawalStore], ([$state]) => {
-			const targetProb = getTargetProbFromMargin($state.conservatismMargin);
-			const years = calculateTargetHorizon($state.people, targetProb);
-			return {
-				planningHorizonYears: years,
-				targetSurvivalProb: targetProb
-			};
-		})
+		subscribe: planningStore.subscribe,
+		save: planningStore.save,
+		load: planningStore.load,
+		reset: () => planningStore.update(() => ({ people: [{ age: 65, gender: 'male' }, { age: 65, gender: 'female' }], conservatismMargin: 0.5 })),
+		publicData: derived([planningHorizon], ([$horizon]) => ({
+			planningHorizonYears: $horizon.yearsRemaining,
+			horizonYear: $horizon.horizonYear,
+			targetSurvivalProb: $horizon.targetProb
+		}))
 	},
 
 	engine: {
 		calculate: (params) => {
-			const state = get(withdrawalStore);
-			const targetProb = getTargetProbFromMargin(state.conservatismMargin);
-			const yearsRemaining = calculateTargetHorizon(state.people, targetProb);
+			const horizon = get(planningHorizon);
+			const yearsRemaining = horizon.yearsRemaining;
 
 			// Get data from other modules via the registry
 			const tipsModule = registry.getModule('tips-ladder');
@@ -61,7 +57,8 @@ export const SmartWithdrawalModule: FinancialModule<WithdrawalState, any, any> =
 				floor,
 				upside,
 				yearsRemaining,
-				targetProb
+				targetProb: horizon.targetProb,
+				horizonYear: horizon.horizonYear
 			};
 		},
 		project: (state): ProjectionData => {

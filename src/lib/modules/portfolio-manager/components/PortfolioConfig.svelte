@@ -2,8 +2,20 @@
 	import { portfolioStore, expectedRealReturn } from '../store/portfolio';
 	import { formatCurrency } from '../../../shared/financial';
 
+	import { registry } from '../../../core/registry';
+
 	let state = $derived($portfolioStore);
 	let realReturn = $derived($expectedRealReturn);
+
+	let calculated = $derived.by(() => {
+		const mod = registry.getModule('portfolio-manager');
+		return mod?.engine.calculate({});
+	});
+
+	let isHorizonSynced = $derived.by(() => {
+		const withdrawalModule = registry.getModule('smart-withdrawals');
+		return !!withdrawalModule;
+	});
 
 	function updateBalance(e: Event) {
 		const val = parseFloat((e.target as HTMLInputElement).value);
@@ -18,6 +30,14 @@
 	function updateRetirement(e: Event) {
 		const val = parseInt((e.target as HTMLInputElement).value);
 		portfolioStore.update(s => ({ ...s, retirementYear: val }));
+	}
+
+	let saved = $state(false);
+
+	function handleSave() {
+		portfolioStore.save(state);
+		saved = true;
+		setTimeout(() => saved = false, 2000);
 	}
 </script>
 
@@ -43,9 +63,18 @@
 			</div>
 
 			<div class="space-y-2">
-				<label for="retirement" class="block text-[10px] font-black uppercase tracking-wider text-slate-500">Horizon Year</label>
-				<input type="number" id="retirement" value={state.retirementYear} oninput={updateRetirement}
-					class="w-full rounded-lg border-slate-200 focus:border-blue-500 focus:ring-blue-500" />
+				<label for="retirement" class="block text-[10px] font-black uppercase tracking-wider text-slate-500">
+					Horizon Year
+					{#if isHorizonSynced}
+						<span class="ml-2 text-[8px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">SYNCED WITH AGES</span>
+					{/if}
+				</label>
+				<input type="number" id="retirement" value={calculated?.horizonYear} oninput={updateRetirement}
+					disabled={isHorizonSynced}
+					class="w-full rounded-lg border-slate-200 focus:border-blue-500 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400" />
+				{#if isHorizonSynced}
+					<p class="text-[9px] text-slate-400 italic">Adjust ages in Smart Withdrawal module to change this.</p>
+				{/if}
 			</div>
 		</div>
 
@@ -60,10 +89,15 @@
 		</div>
 
 		<button 
-			onclick={() => portfolioStore.save(state)}
-			class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-all"
+			onclick={handleSave}
+			class="w-full py-4 {saved ? 'bg-emerald-600' : 'bg-blue-600 hover:bg-blue-500'} text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
 		>
-			Save Portfolio Plan
+			{#if saved}
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+				<span>Plan Saved!</span>
+			{:else}
+				<span>Save Portfolio Plan</span>
+			{/if}
 		</button>
 	</aside>
 

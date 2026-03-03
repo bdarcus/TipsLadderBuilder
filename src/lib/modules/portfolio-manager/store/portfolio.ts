@@ -54,6 +54,7 @@ function createPortfolioStore() {
 			}
 		},
 		save: (state: PortfolioState) => {
+			console.log('Saving portfolio state:', state);
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('portfolio_manager_state', JSON.stringify({ ...state, isLoaded: true }));
 			}

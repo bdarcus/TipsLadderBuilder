@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { withdrawalStore } from '../store/withdrawal';
+	import { planningStore, planningHorizon } from '../../../shared/planning';
 	import { registry } from '../../../core/registry';
-	import { get } from 'svelte/store';
 	import { formatCurrency } from '../../../shared/financial';
 
-	let state = $derived($withdrawalStore);
+	let state = $derived($planningStore);
+	let horizon = $derived($planningHorizon);
 
 	function updateAge(idx: number, e: Event) {
 		const val = parseInt((e.target as HTMLInputElement).value);
-		withdrawalStore.update(s => {
+		planningStore.update(s => {
 			const people = [...s.people];
 			people[idx].age = val;
 			return { ...s, people };
@@ -17,7 +17,7 @@
 
 	function updateConservatism(e: Event) {
 		const val = parseFloat((e.target as HTMLInputElement).value) / 100;
-		withdrawalStore.update(s => ({ ...s, conservatismMargin: val }));
+		planningStore.update(s => ({ ...s, conservatismMargin: val }));
 	}
 
 	// Dynamic calculation for display
@@ -26,6 +26,14 @@
 		if (!smartMod) return null;
 		return smartMod.engine.calculate({});
 	});
+
+	let saved = $state(false);
+
+	function handleSave() {
+		planningStore.save(state);
+		saved = true;
+		setTimeout(() => saved = false, 2000);
+	}
 </script>
 
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -53,10 +61,15 @@
 		</div>
 
 		<button 
-			onclick={() => withdrawalStore.save(state)}
-			class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-md transition-all"
+			onclick={handleSave}
+			class="w-full py-4 {saved ? 'bg-emerald-600' : 'bg-green-600 hover:bg-green-500'} text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
 		>
-			Save Withdrawal Plan
+			{#if saved}
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+				<span>Plan Saved!</span>
+			{:else}
+				<span>Save Withdrawal Plan</span>
+			{/if}
 		</button>
 	</aside>
 
@@ -65,7 +78,7 @@
 			<h3 class="font-serif text-xl font-bold mb-6">Merton Dynamic Spending</h3>
 			<p class="text-slate-600 text-sm leading-relaxed mb-8">
 				This calculation combines your <strong>TIPS Floor</strong> with the <strong>Portfolio Surplus</strong>, 
-				amortized over a <strong>{result?.yearsRemaining.toFixed(1)} year</strong> planning horizon (based on your joint life expectancy and conservatism).
+				amortized over a <strong>{horizon.yearsRemaining.toFixed(1)} year</strong> planning horizon (based on your joint life expectancy and conservatism).
 			</p>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

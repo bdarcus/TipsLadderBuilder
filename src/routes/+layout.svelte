@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { registry } from '$lib';
+	import { planningStore } from '$lib/shared/planning';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import './layout.css';
@@ -11,6 +12,9 @@
 	const modules = registry.getAllModules();
 
 	onMount(() => {
+		// Load planning state first
+		planningStore.load();
+
 		// Load all module states
 		modules.forEach(m => m.store.load());
 		

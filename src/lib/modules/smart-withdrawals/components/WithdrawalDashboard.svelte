@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { withdrawalStore } from '../store/withdrawal';
+	import { planningStore, planningHorizon } from '../../../shared/planning';
 	import { registry } from '../../../core/registry';
 	import { formatCurrency } from '../../../shared/financial';
 	
-	let state = $derived($withdrawalStore);
+	let state = $derived($planningStore);
+	let horizon = $derived($planningHorizon);
 	let result = $derived.by(() => {
 		const smartMod = registry.getModule('smart-withdrawals');
 		if (!smartMod) return null;
@@ -19,7 +20,7 @@
 		</div>
 		<div class="text-right">
 			<div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Planning Horizon</div>
-			<div class="text-sm font-bold text-slate-700">{Math.round(result?.yearsRemaining || 0)} yrs</div>
+			<div class="text-sm font-bold text-slate-700">{Math.round(horizon.yearsRemaining)} yrs</div>
 		</div>
 	</div>
 	
