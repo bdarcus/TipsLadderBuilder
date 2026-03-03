@@ -50,86 +50,77 @@ To support multiple modules, the UI will move from a hardcoded page structure to
 The main application layout (the Shell) provides the navigation sidebar and header but remains agnostic of the content. It defines **Slots** where modules can "mount" their components:
 - **Primary View Slot:** Renders the active module's main analysis or configuration page.
 - **Widget Slot:** Renders small summary cards from *any* active module into a side-panel or dashboard.
-- **Global Toast/Alert Slot:** Allows modules to push notifications (e.g., "Portfolio Drift Detected") even when they are not the "active" view.
+- **Global Toast/Alert Slot:** Allows modules to push notifications.
 
 ### 3.2 Composite Dashboards
-The platform will support a **Master Dashboard** that aggregates components from all enabled modules. This allows a user to see their TIPS ladder floor, their total stock allocation, and their "Safe to Spend" withdrawal rate in a single unified view.
+The platform will support a **Master Dashboard** that aggregates components from all enabled modules.
 
 ### 3.3 Cross-Module Communication
-Modules can interact with each other via their `publicData` stores:
-- **The Portfolio Module** exposes `totalPortfolioBalance`.
-- **The TIPS Module** exposes `guaranteedRealIncomeFloor`.
-- **The Withdrawal Module** subscribes to both to calculate a dynamic spending rate:
-  `spending = fn($portfolioBalance, $tipsFloor)`
+Modules can interact via their `publicData` stores. For example, the Withdrawal module subscribes to the Portfolio balance and the TIPS floor to calculate a dynamic spending rate.
 
 ## 4. Proposed Directory Structure
-We will move from "Layer-based" organization to "Feature-based" organization.
-
 ```text
 src/lib/
 ├── modules/
-│   ├── tips-ladder/          # Current TIPS logic (refactored)
+│   ├── tips-ladder/          # Current TIPS logic
 │   │   ├── engine/           # Math & Algorithms
-│   │   ├── components/       # TIPS-specific UI (Summary.svelte, Detail.svelte)
+│   │   ├── components/       # TIPS-specific UI
 │   │   └── store.ts          # TIPS-specific state
-│   ├── portfolio-manager/    # NEW: Asset allocation & drift
-│   └── merton-withdrawals/   # NEW: Dynamic spending rates
-├── shared/                   # Common utilities
-│   ├── math/                 # Yield curves, inflation adj, IRR
-│   ├── date/                 # Financial year logic, maturity dates
-│   └── data/                 # CSV parsing, fetch wrappers
-└── core/                     # Platform "Glue"
-    ├── registry.ts           # Module registration & switching
-    └── layout-engine.ts      # Shared navigation & shell logic (Slots & Dashboards)
+│   ├── portfolio-manager/    # Merton-inspired Asset Allocation
+│   │   ├── engine/           # Amortization & Elm Wealth assumptions
+│   │   ├── components/       # Allocation & Risk UI
+│   │   └── store.ts          # Portfolio state
+│   └── smart-withdrawals/    # Merton-inspired Dynamic Spending
+│       ├── engine/           # Joint Life Expectancy & Merton formula
+│       ├── components/       # Spending & Floor UI
+│       └── store.ts          # Withdrawal state
+├── shared/                   # Common utilities (Math, Date, Data)
+└── core/                     # Platform "Glue" (Registry, Layout Engine)
 ```
 
-## 5. Module Roadmap
+## 5. Module Details
 
-### Phase 1: TIPS Specialization (Current Scope)
-Even with a TIPS-only focus, modularity allows for different "modes" of laddering:
-- **The Optimizer:** For users building a ladder from scratch with a lump sum.
-- **The Income Tracker:** For retirees focused on monthly cash flow from maturing bonds.
+### 5.1 TIPS Ladder Module
+- **Focus:** Building and tracking inflation-protected income ladders.
+- **Output:** Provides the "Real Income Floor" for withdrawal strategies.
 
-### Phase 2: Total Portfolio Integration
-- **Asset Allocation Module:** Tracks stocks vs. bonds vs. TIPS.
-- **Drift Analysis:** Alerts the user when their portfolio deviates from a target (e.g., 60/40) and suggests rebalancing trades.
+### 5.2 Total Portfolio Module (Merton-Inspired)
+- **Concept:** Constant amortization of the total portfolio balance.
+- **Input:** Asset Allocation (e.g., Equity/Bond ratio) serves as a **proxy for risk**.
+- **Market Data:** Integrates **Elm Wealth's quarterly "market assumptions"** for expected returns on Global Equities and TIPS.
+- **Logic:** Dynamically updates expected future returns based on the chosen allocation and current market assumptions.
 
-### Phase 3: Advanced Retirement Spending
-- **Merton-Inspired Variable Withdrawals:** Implements Robert Merton's *Integrated Life-Cycle Management*. 
-- This module consumes data from the **TIPS Module** (the floor) and the **Portfolio Module** (the upside) to calculate a monthly "Safe to Spend" amount that adjusts dynamically with market performance.
+### 5.3 Smart Withdrawal Module (Merton-Inspired)
+- **Concept:** Dynamic spending rate based on Robert Merton's *Integrated Life-Cycle Management*.
+- **Logic:** 
+    - Calculates spending using **Joint Life Expectancy** models.
+    - Includes a **Conservatism/Safety Margin** parameter (User-designated).
+    - Integrates the TIPS "Floor" and Portfolio "Upside".
+- **Goal:** Provide a sustainable, adjusting spending rate that reacts to market performance and remaining life expectancy.
 
 ## 6. Implementation Strategy
 
 ### Step 1: Shared Logic Extraction
-Identify code in `rebalance-engine.ts` and `csv-parser.ts` that is universally useful (e.g., `parseCSV`, `formatCurrency`, `getDaysInYear`) and move it to `src/lib/shared/`.
+Move generic utilities (CSV parsing, date math, currency formatting) to `src/lib/shared/`.
 
-### Step 2: Encapsulation
-Wrap the existing TIPS state (from `ladderStore`) and the logic (from `runRebalance`) into a `TipsLadderModule` object that implements the interface.
+### Step 2: Encapsulation & Refactoring
+1. Move existing TIPS code to `src/lib/modules/tips-ladder/`.
+2. Implement the `FinancialModule` interface and `ModuleRegistry`.
+3. Create the `Total Portfolio` and `Smart Withdrawal` module scaffolds.
 
-### Step 3: Module Switching UI
-Update the main layout to include a "Module Picker." When a user switches modules, the platform:
-1. Swaps the active store.
-2. Re-renders the navigation items.
-3. Dynamically imports the required UI components.
+### Step 3: Integration of Advanced Logic
+1. Implement the Merton amortization and joint life expectancy engines.
+2. Integrate Elm Wealth market assumption data fetching.
 
-## 8. User Orchestration & Customization
-To prevent "feature bloat," users will have direct control over how modules are integrated and displayed.
+### Step 4: UI Shell Migration
+Update the main layout to support the "Shell & Slot" model and the "Module Picker."
 
-### 8.1 Module Manager
-A dedicated settings page allows users to toggle specific financial tools on or off. Enabling a module adds its specific icons to the sidebar and its widgets to the available pool.
+## 7. User Orchestration & Customization
+- **Module Manager:** Toggle features on/off.
+- **Data Wiring:** Connect the TIPS "Floor" to the Withdrawal "Engine".
+- **Dashboard Builder:** Drag-and-drop widgets from different modules.
 
-### 8.2 Data Wiring (The "Connect" UI)
-For modules that depend on others (e.g., Variable Withdrawals), a simple configuration interface allows users to "wire" inputs:
-- **Source Selection:** "Use data from [TIPS Module A] as my inflation-protected floor."
-- **Integration Logic:** "Apply [Merton Calculation] to my [Vanguard Portfolio] balance."
-
-### 8.3 Widget-Based Dashboard Builder
-Users can "stitch" their own views using a grid-based dashboard:
-- **Add Widgets:** Select from a library of components (e.g., "Yield Curve," "Asset Drift," "Spending Gauge").
-- **Layout Persistence:** The custom layout is saved to the user's local state, providing a personalized command center.
-
-## 9. Benefits of This Approach
-1. **Maintainability:** Bugs in the portfolio logic won't break the TIPS laddering tool.
-2. **Scalability:** New financial models (like I-Bond ladders or Social Security optimization) can be added as self-contained plugins.
-3. **Holistic Views:** Users can create custom dashboards that combine views from multiple modules.
-4. **User Clarity:** Users can choose to use the "Simple TIPS Tracker" or the "Full Retirement Suite" without being overwhelmed by UI elements they don't need.
+## 8. Benefits
+- **Extensibility:** Easily add new strategies (e.g., I-Bonds).
+- **Precision:** Uses real-world market assumptions and life-expectancy models.
+- **Flexibility:** Allocation as a risk proxy allows for personalized retirement paths.

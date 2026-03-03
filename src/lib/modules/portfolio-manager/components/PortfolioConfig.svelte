@@ -1,0 +1,1 @@
+<div class="p-4 bg-blue-50">Portfolio Risk/Allocation Config</div>

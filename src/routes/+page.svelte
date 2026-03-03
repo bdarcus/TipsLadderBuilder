@@ -1,38 +1,39 @@
 <script lang="ts">
+	import { registry } from '$lib';
+	
+	const modules = registry.getAllModules();
 </script>
 
-<div class="text-center py-12">
-	<h1 class="font-serif text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-		TIPS Ladder Architect
-	</h1>
-	<p class="mt-6 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">
-		Plan your guaranteed, inflation-protected income stream with the unique duration-matching engine for gap-year coverage.
-	</p>
-	<div class="mt-10 flex items-center justify-center gap-x-6">
-		<a
-			href="/design"
-			class="rounded-xl bg-emerald-600 px-6 py-4 text-sm font-bold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-all hover:-translate-y-1"
-		>
-			Design New Ladder
-		</a>
-		<a href="/import" class="text-sm font-bold leading-6 text-slate-900 hover:text-emerald-600 transition-colors">
-			Import Existing Portfolio <span aria-hidden="true">→</span>
-		</a>
-	</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+	{#each modules as m}
+		<div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+			<div class="flex items-center space-x-3 mb-4">
+				<div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+					<svelte:component this={m.ui.Icon} />
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">{m.name}</h2>
+			</div>
+			
+			<div class="mb-6">
+				<svelte:component this={m.ui.Dashboard} />
+			</div>
+
+			<button 
+				onclick={() => registry.setActive(m.id)}
+				class="w-full py-2 bg-slate-50 text-slate-600 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-colors font-medium text-sm"
+			>
+				Manage {m.name}
+			</button>
+		</div>
+	{/each}
 </div>
 
-<div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:px-8 max-w-5xl mx-auto">
-	<a href="/design" class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-500 transition-all group block">
-		<div class="text-3xl mb-4 group-hover:scale-110 transition-transform inline-block">🌱</div>
-		<h2 class="font-serif text-2xl font-bold mb-2 text-slate-900">Start Fresh</h2>
-		<p class="text-slate-600 mb-4">Build a new ladder from cash using an optimized selection strategy.</p>
-		<div class="text-emerald-600 font-bold text-xs tracking-widest uppercase">Build from Zero →</div>
-	</a>
-
-	<a href="/import" class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-500 transition-all group block">
-		<div class="text-3xl mb-4 group-hover:scale-110 transition-transform inline-block">📈</div>
-		<h2 class="font-serif text-2xl font-bold mb-2 text-slate-900">Maintain & Extend</h2>
-		<p class="text-slate-600 mb-4">Rebalance your existing portfolio and add new rungs with duration matching.</p>
-		<div class="text-emerald-600 font-bold text-xs tracking-widest uppercase">Sync Holdings →</div>
-	</a>
+<div class="mt-12 bg-white p-8 rounded-xl border border-slate-200">
+	<h2 class="text-2xl font-serif font-bold text-slate-900 mb-4">Merton-Inspired Planning</h2>
+	<p class="text-slate-600 max-w-3xl leading-relaxed">
+		This platform integrates specialized modules to create a holistic retirement plan. 
+		The <strong>TIPS Ladder</strong> provides a guaranteed floor of real income. 
+		The <strong>Total Portfolio</strong> manages your risky assets with constant amortization. 
+		The <strong>Smart Withdrawal</strong> module uses joint life expectancy to dynamically determine your safe spending rate.
+	</p>
 </div>

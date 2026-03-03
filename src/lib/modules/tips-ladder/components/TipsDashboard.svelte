@@ -1,0 +1,1 @@
+<div class="p-2 border rounded">TIPS Dashboard Widget</div>

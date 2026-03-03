@@ -1,0 +1,1 @@
+<div class="p-2 border border-blue-200">Portfolio Dashboard Widget</div>

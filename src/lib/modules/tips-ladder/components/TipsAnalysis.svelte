@@ -1,0 +1,1 @@
+<div class="h-full p-8 bg-white">TIPS Full Analysis View</div>

@@ -1,44 +1,72 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ladderStore } from '$lib/stores/ladder';
+	import { registry } from '$lib';
 	import './layout.css';
-	// import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
 
+	const activeModuleId = registry.getActiveId();
+	const modules = registry.getAllModules();
+
 	onMount(() => {
-		ladderStore.load();
+		// Load all module states
+		modules.forEach(m => m.store.load());
 	});
+
+	function setActive(id: string) {
+		registry.setActive(id);
+	}
 </script>
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 	<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-	<title>TIPS Ladder Architect</title>
+	<title>Financial Modulator</title>
 </svelte:head>
 
-<div class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+<div class="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
+	<!-- Navbar with Module Picker -->
 	<nav class="bg-white border-b border-slate-200">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="flex justify-between h-16">
 				<div class="flex">
 					<div class="flex-shrink-0 flex items-center">
-						<a href="/" class="font-serif text-xl font-bold text-emerald-600">TIPS Ladder Architect</a>
+						<a href="/" class="font-serif text-xl font-bold text-emerald-600">Financial Modulator</a>
 					</div>
-					<div class="hidden sm:-my-px sm:ml-8 sm:flex sm:space-x-8">
-						<a href="/design" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Design</a>
-						<a href="/import" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Import</a>
-						<a href="/track" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Track</a>
-						<a href="/resources" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Resources</a>
+					<div class="hidden sm:-my-px sm:ml-8 sm:flex sm:space-x-4">
+						{#each modules as m}
+							<button 
+								onclick={() => setActive(m.id)}
+								class="inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors {m.id === $activeModuleId ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
+							>
+								{m.name}
+							</button>
+						{/each}
 					</div>
+				</div>
+				<div class="flex items-center space-x-4">
+					<a href="/design" class="text-sm text-slate-500 hover:text-slate-700">Design</a>
+					<a href="/track" class="text-sm text-slate-500 hover:text-slate-700">Track</a>
 				</div>
 			</div>
 		</div>
 	</nav>
 
-	<main class="py-10">
+	<!-- Main Content Area -->
+	<main class="flex-1 py-10">
 		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<!-- Show the active module's name at the top -->
+			{#if $activeModuleId}
+				{@const activeModule = modules.find(m => m.id === $activeModuleId)}
+				<div class="mb-8 flex items-center justify-between">
+					<div>
+						<h1 class="text-3xl font-serif font-bold text-slate-900">{activeModule?.name}</h1>
+						<p class="text-slate-500 mt-1">{activeModule?.description}</p>
+					</div>
+				</div>
+			{/if}
+
 			{@render children()}
 		</div>
 	</main>

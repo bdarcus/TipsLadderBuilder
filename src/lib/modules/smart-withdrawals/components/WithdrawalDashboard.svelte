@@ -1,0 +1,1 @@
+<div class="p-2 border border-green-200">Withdrawal Dashboard Widget</div>
