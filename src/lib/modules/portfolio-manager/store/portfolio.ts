@@ -68,7 +68,8 @@ function createPortfolioStore() {
 			if (typeof localStorage !== 'undefined') {
 				const saved = localStorage.getItem('portfolio_manager_state');
 				if (saved) {
-					set({ ...JSON.parse(saved), isLoaded: true });
+					// Merge with DEFAULT_STATE to handle newly added fields
+					set({ ...DEFAULT_STATE, ...JSON.parse(saved), isLoaded: true });
 					return;
 				}
 			}
