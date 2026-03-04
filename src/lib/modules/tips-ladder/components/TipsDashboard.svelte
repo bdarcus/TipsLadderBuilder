@@ -28,6 +28,9 @@
 					<div class="flex items-center space-x-2">
 						<div class="w-1.5 h-1.5 rounded-full {ladder.taxStatus === 'tax-free' ? 'bg-blue-400' : ladder.taxStatus === 'deferred' ? 'bg-orange-400' : 'bg-emerald-500'}"></div>
 						<span class="font-bold text-slate-600 uppercase tracking-wider truncate max-w-[80px]">{ladder.name}</span>
+						<span class="text-[8px] font-black px-1.5 py-0.5 rounded {ladder.taxStatus === 'tax-free' ? 'bg-blue-50 text-blue-600' : ladder.taxStatus === 'deferred' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600'}">
+							{ladder.taxStatus === 'tax-free' ? 'ROTH' : ladder.taxStatus === 'deferred' ? 'IRA' : 'TAX'}
+						</span>
 					</div>
 					<div class="flex items-center space-x-2">
 						<span class="text-slate-400 font-bold">{ladder.startYear}–{ladder.endYear}</span>
