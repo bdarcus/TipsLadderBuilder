@@ -8,7 +8,8 @@
 {#if $activeModuleId}
 	{@const activeModule = modules.find(m => m.id === $activeModuleId)}
 	{#if activeModule}
-		<svelte:component this={activeModule.ui.Analysis} />
+		{@const Analysis = activeModule.ui.Analysis}
+		<Analysis />
 	{/if}
 {:else}
 	<div class="p-12 text-center text-slate-400">

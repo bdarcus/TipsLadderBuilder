@@ -8,7 +8,8 @@
 {#if $activeModuleId}
 	{@const activeModule = modules.find(m => m.id === $activeModuleId)}
 	{#if activeModule && activeModule.ui.Import}
-		<svelte:component this={activeModule.ui.Import} />
+		{@const Import = activeModule.ui.Import}
+		<Import />
 	{:else}
 		<div class="p-12 text-center text-slate-400 bg-white rounded-3xl border border-dashed border-slate-200">
 			<div class="text-4xl mb-4">📁</div>

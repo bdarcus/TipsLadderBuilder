@@ -126,12 +126,14 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each allModules as m}
 				{@const isEnabled = $enabledMap[m.id]}
+				{@const Icon = m.ui.Icon}
+				{@const Dashboard = m.ui.Dashboard}
 				<div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm transition-all flex flex-col justify-between {isEnabled ? 'ring-2 ring-emerald-500/20' : 'opacity-60 grayscale'}">
 					<div>
 						<div class="flex items-center justify-between mb-4">
 							<div class="flex items-center space-x-3">
 								<div class="p-2 bg-slate-50 text-slate-600 rounded-lg group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
-									<svelte:component this={m.ui.Icon} />
+									<Icon />
 								</div>
 								<h3 class="text-lg font-bold text-slate-900">{m.name}</h3>
 							</div>
@@ -148,7 +150,7 @@
 						
 						{#if isEnabled}
 							<div class="mb-6 py-4 border-t border-slate-50">
-								<svelte:component this={m.ui.Dashboard} />
+								<Dashboard />
 							</div>
 						{/if}
 					</div>
