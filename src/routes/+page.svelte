@@ -4,10 +4,6 @@
 	import { formatCurrency } from '$lib/shared/financial';
 	import { exportAllData, importAllData } from '$lib/shared/persistence';
 	
-	const allModules = registry.getAllModules();
-	const enabledModules = registry.getEnabledModules();
-	const enabledMap = registry.getEnabledMap();
-
 	function manageModule(id: string) {
 		registry.setActive(id);
 		goto('/design');
@@ -124,8 +120,8 @@
 	<section class="space-y-6">
 		<h2 class="font-serif text-2xl font-bold text-slate-900 px-2">Module Gallery</h2>
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each $allModules as m}
-				{@const isEnabled = $enabledMap[m.id]}
+			{#each registry.allModulesList as m}
+				{@const isEnabled = registry.isEnabled(m.id)}
 				{@const Icon = m.ui.Icon}
 				{@const Dashboard = m.ui.Dashboard}
 				<div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm transition-all flex flex-col justify-between {isEnabled ? 'ring-2 ring-emerald-500/20' : 'opacity-60 grayscale'}">

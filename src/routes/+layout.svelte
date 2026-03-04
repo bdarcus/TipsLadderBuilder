@@ -8,10 +8,6 @@
 
 	let { children } = $props();
 
-	const activeModuleId = registry.getActiveId();
-	const allModules = registry.getAllModules();
-	const enabledModules = registry.getEnabledModules();
-
 	onMount(() => {
 		// Load registry state (enabled/disabled)
 		registry.loadRegistry();
@@ -20,7 +16,7 @@
 		planningStore.load();
 
 		// Load all module states
-		$allModules.forEach(m => m.store.load());
+		registry.allModulesList.forEach(m => m.store.load());
 		
 		// Specifically for Portfolio module, fetch external assumptions
 		const portfolioModule = registry.getModule('portfolio-manager');
@@ -55,10 +51,10 @@
 						<a href="/" class="font-serif text-xl font-bold text-emerald-600">Financial Modulator</a>
 					</div>
 					<div class="hidden sm:-my-px sm:ml-8 sm:flex sm:space-x-4">
-						{#each $enabledModules as m}
+						{#each registry.enabledModulesList as m}
 							<button 
 								onclick={() => setActive(m.id)}
-								class="inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors {m.id === $activeModuleId ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
+								class="inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors {m.id === registry.activeId ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
 							>
 								{m.name}
 							</button>
@@ -77,8 +73,8 @@
 	<main class="flex-1 py-10">
 		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<!-- Show the active module's name at the top -->
-			{#if $activeModuleId}
-				{@const activeModule = modules.find(m => m.id === $activeModuleId)}
+			{#if registry.activeId}
+				{@const activeModule = registry.getModule(registry.activeId)}
 				<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
 					<div>
 						<h1 class="text-3xl font-serif font-bold text-slate-900">{activeModule?.name}</h1>

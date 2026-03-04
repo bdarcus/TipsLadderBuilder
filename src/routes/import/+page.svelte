@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { registry } from '$lib';
-
-	const activeModuleId = registry.getActiveId();
-	const allModules = registry.getAllModules();
 </script>
 
-{#if $activeModuleId}
-	{@const activeModule = $allModules.find(m => m.id === $activeModuleId)}
+{#if registry.activeId}
+	{@const activeModule = registry.getModule(registry.activeId)}
 	{#if activeModule && activeModule.ui.Import}
 		{@const Import = activeModule.ui.Import}
 		<Import />

@@ -1,84 +1,74 @@
-import { writable, get, derived } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { FinancialModule } from './types';
 
 /**
  * Singleton Registry that manages all pluggable financial modules.
+ * Refactored to Svelte 5 reactive patterns.
  */
 class ModuleRegistry {
-	private modules = writable<Map<string, FinancialModule>>(new Map());
+	// Map of ID -> Module
+	modules = $state(new Map<string, FinancialModule>());
 	
-	// Reactive state for the currently active UI module
-	private activeModuleId = writable<string | null>(null);
+	// Active module ID for UI routing
+	activeId = $state<string | null>(null);
 
-	// Reactive state for which modules are enabled/disabled
-	private enabledModules = writable<Record<string, boolean>>({});
+	// Map of module ID -> enabled status
+	enabledMap = $state<Record<string, boolean>>({});
 
 	register(module: FinancialModule) {
-		this.modules.update(m => {
-			m.set(module.id, module);
-			return new Map(m); // Trigger reactivity
-		});
+		this.modules.set(module.id, module);
 		
-		// By default, if it's the first module or was previously enabled, turn it on
-		this.enabledModules.update(prev => {
-			if (prev[module.id] === undefined) {
-				return { ...prev, [module.id]: true };
-			}
-			return prev;
-		});
+		// Initialize enabled state if not already set
+		if (this.enabledMap[module.id] === undefined) {
+			this.enabledMap[module.id] = true;
+		}
 	}
 
 	loadRegistry() {
 		if (typeof localStorage !== 'undefined') {
 			const saved = localStorage.getItem('registry_enabled_modules');
 			if (saved) {
-				this.enabledModules.set(JSON.parse(saved));
+				try {
+					const parsed = JSON.parse(saved);
+					// Merge with current to ensure new modules are visible even if old state exists
+					this.enabledMap = { ...this.enabledMap, ...parsed };
+				} catch (e) {
+					console.error('Failed to parse registry state', e);
+				}
 			}
 		}
 	}
 
 	saveRegistry() {
 		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem('registry_enabled_modules', JSON.stringify(get(this.enabledModules)));
+			localStorage.setItem('registry_enabled_modules', JSON.stringify(this.enabledMap));
 		}
 	}
 
 	toggleModule(id: string) {
-		this.enabledModules.update(prev => {
-			const next = { ...prev, [id]: !prev[id] };
-			setTimeout(() => this.saveRegistry(), 0);
-			return next;
-		});
+		this.enabledMap[id] = !this.enabledMap[id];
+		this.saveRegistry();
 	}
 
 	isEnabled(id: string) {
-		return derived(this.enabledModules, $enabled => !!$enabled[id]);
-	}
-
-	getEnabledMap() {
-		return this.enabledModules;
+		return this.enabledMap[id] ?? false;
 	}
 
 	getModule(id: string): FinancialModule | undefined {
-		return get(this.modules).get(id);
+		return this.modules.get(id);
 	}
 
-	getAllModules() {
-		return derived(this.modules, $m => Array.from($m.values()));
+	// Helpers for Svelte components
+	get allModulesList() {
+		return Array.from(this.modules.values());
 	}
 
-	getEnabledModules() {
-		return derived([this.modules, this.enabledModules], ([$modules, $enabled]) => {
-			return Array.from($modules.values()).filter(m => !!$enabled[m.id]);
-		});
+	get enabledModulesList() {
+		return this.allModulesList.filter(m => this.enabledMap[m.id]);
 	}
 
 	setActive(id: string | null) {
-		this.activeModuleId.set(id);
-	}
-
-	getActiveId() {
-		return this.activeModuleId;
+		this.activeId = id;
 	}
 }
 
