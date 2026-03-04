@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { planningStore, planningHorizon } from '../../../shared/planning';
 	import { formatCurrency } from '../../../shared/financial';
-	import { registry } from '../../../core/registry';
+	import { registry } from '../../../core/registry.svelte';
 
 	let state = $derived($planningStore);
 	let horizon = $derived($planningHorizon);

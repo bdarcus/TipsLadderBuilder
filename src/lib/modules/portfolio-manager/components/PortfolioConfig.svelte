@@ -3,7 +3,7 @@
 	import { formatCurrency } from '../../../shared/financial';
 	import { planningHorizon } from '../../../shared/planning';
 
-	import { registry } from '../../../core/registry';
+	import { registry } from '../../../core/registry.svelte';
 
 	let state = $derived($portfolioStore);
 	let realReturn = $derived($expectedRealReturn);

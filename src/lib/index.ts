@@ -1,4 +1,4 @@
-import { registry } from './core/registry';
+import { registry } from './core/registry.svelte';
 import { TipsLadderModule } from './modules/tips-ladder';
 import { TotalPortfolioModule } from './modules/portfolio-manager';
 import { SmartWithdrawalModule } from './modules/smart-withdrawals';

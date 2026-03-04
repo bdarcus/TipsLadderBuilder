@@ -2,7 +2,7 @@ import { derived, get } from 'svelte/store';
 import { withdrawalStore, type WithdrawalState } from './store/withdrawal';
 import { planningStore, planningHorizon } from '../../shared/planning';
 import { calculateConstantAmortization } from '../portfolio-manager/engine/amortization';
-import { registry } from '../../core/registry';
+import { registry } from '../../core/registry.svelte';
 import type { FinancialModule, ProjectionData } from '../../core/types';
 
 // Placeholder components
