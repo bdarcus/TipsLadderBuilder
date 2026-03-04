@@ -19,8 +19,8 @@ export interface IncomeStream {
 	annualAmounts: Record<number, number>; // Year -> Real Amount
 	isGuaranteed: boolean;
 	hasCOLA: boolean;
+	taxStatus: 'taxable' | 'tax-free' | 'deferred';
 }
-
 /**
  * The core interface for a pluggable financial feature.
  */
@@ -44,8 +44,8 @@ export interface FinancialModule<TState = any, TCalc = any, TPublic = any> {
 	engine: {
 		calculate: (params: any) => TCalc;
 		project?: (state: TState) => ProjectionData;
-		// Returns the real income stream for the planning horizon
-		getIncomeStream?: (state: TState) => IncomeStream;
+		// Returns the real income stream(s) for the planning horizon
+		getIncomeStreams?: (state: TState) => IncomeStream[];
 	};
 
 	// UI Components

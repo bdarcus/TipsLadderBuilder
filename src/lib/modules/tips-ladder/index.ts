@@ -40,25 +40,24 @@ export const TipsLadderModule: FinancialModule = {
 			const state = get(ladderStore);
 			return state.ladders.reduce((sum, l) => sum + l.annualIncome, 0);
 		},
-		getIncomeStream: (state): IncomeStream => {
-			const annualAmounts: Record<number, number> = {};
-			
-			state.ladders.forEach(ladder => {
+		getIncomeStreams: (state): IncomeStream[] => {
+			return state.ladders.map((ladder) => {
+				const annualAmounts: Record<number, number> = {};
 				for (let y = ladder.startYear; y <= ladder.endYear; y++) {
-					annualAmounts[y] = (annualAmounts[y] || 0) + ladder.annualIncome;
+					annualAmounts[y] = ladder.annualIncome;
 				}
+
+				return {
+					id: ladder.id,
+					name: ladder.name,
+					annualAmounts,
+					isGuaranteed: true,
+					hasCOLA: true,
+					taxStatus: ladder.taxStatus
+				};
 			});
-
-			return {
-				id: 'bond-ladders',
-				name: 'Bond Ladder Income',
-				annualAmounts,
-				isGuaranteed: true,
-				hasCOLA: true // Assuming inflation protection for TIPS, though 'simple' might vary
-			};
 		}
-	},
-
+		},
 	ui: {
 		Icon: TipsIcon,
 		Config: TipsConfig,

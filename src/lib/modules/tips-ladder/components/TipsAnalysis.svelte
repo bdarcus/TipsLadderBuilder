@@ -103,9 +103,14 @@
 								<div class="font-serif text-lg font-bold text-slate-900">{ladder.name}</div>
 							</td>
 							<td class="px-6 py-4">
-								<span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest {ladder.type === 'tips-manual' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}">
-									{ladder.type === 'tips-manual' ? 'TIPS Bonds' : 'Simple Income'}
-								</span>
+								<div class="flex flex-col gap-1">
+									<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest w-fit {ladder.type === 'tips-manual' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-700'}">
+										{ladder.type === 'tips-manual' ? 'TIPS Bonds' : 'Simple Income'}
+									</span>
+									<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest w-fit {ladder.taxStatus === 'tax-free' ? 'bg-blue-50 text-blue-700' : ladder.taxStatus === 'deferred' ? 'bg-orange-50 text-orange-700' : 'bg-slate-50 text-slate-700'}">
+										{ladder.taxStatus === 'tax-free' ? 'Roth (Tax-Free)' : ladder.taxStatus === 'deferred' ? 'Traditional (Deferred)' : 'Taxable'}
+									</span>
+								</div>
 							</td>
 							<td class="px-6 py-4 font-bold text-slate-500">
 								{ladder.startYear} – {ladder.endYear}

@@ -26,10 +26,10 @@
 			{#each state.ladders.slice(0, 3) as ladder}
 				<div class="flex justify-between items-center text-[10px]">
 					<div class="flex items-center space-x-2">
-						<div class="w-1.5 h-1.5 rounded-full {ladder.type === 'tips-manual' ? 'bg-emerald-500' : 'bg-blue-400'}"></div>
-						<span class="font-bold text-slate-600 uppercase tracking-wider truncate max-w-[100px]">{ladder.name}</span>
+						<div class="w-1.5 h-1.5 rounded-full {ladder.taxStatus === 'tax-free' ? 'bg-blue-400' : ladder.taxStatus === 'deferred' ? 'bg-orange-400' : 'bg-emerald-500'}"></div>
+						<span class="font-bold text-slate-600 uppercase tracking-wider truncate max-w-[80px]">{ladder.name}</span>
 					</div>
-					<div class="flex items-center space-x-3">
+					<div class="flex items-center space-x-2">
 						<span class="text-slate-400 font-bold">{ladder.startYear}–{ladder.endYear}</span>
 						<span class="font-black text-slate-900">{formatCurrency(ladder.annualIncome)}</span>
 					</div>

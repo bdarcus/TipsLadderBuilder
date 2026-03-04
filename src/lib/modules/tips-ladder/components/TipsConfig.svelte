@@ -17,6 +17,7 @@
 	// Current Editing Form
 	let currentName = $state('');
 	let currentType = $state<'tips-manual' | 'simple-income'>('tips-manual');
+	let currentTaxStatus = $state<'taxable' | 'tax-free' | 'deferred'>('taxable');
 	let startYear = $state(new Date().getFullYear());
 	let endYear = $state(new Date().getFullYear() + 9);
 	let income = $state(10000);
@@ -57,6 +58,7 @@
 	function resetForm() {
 		currentName = '';
 		currentType = 'tips-manual';
+		currentTaxStatus = 'taxable';
 		startYear = new Date().getFullYear();
 		endYear = new Date().getFullYear() + 9;
 		income = 10000;
@@ -75,6 +77,7 @@
 		activeLadderId = ladder.id;
 		currentName = ladder.name;
 		currentType = ladder.type;
+		currentTaxStatus = ladder.taxStatus || 'taxable';
 		startYear = ladder.startYear;
 		endYear = ladder.endYear;
 		income = ladder.annualIncome;
@@ -121,6 +124,7 @@
 		const ladderData = {
 			name: currentName || 'New Income Stream',
 			type: 'simple-income' as const,
+			taxStatus: currentTaxStatus,
 			startYear,
 			endYear,
 			annualIncome: income
@@ -167,6 +171,7 @@
 		const ladderData = {
 			name: currentName || 'TIPS Ladder',
 			type: 'tips-manual' as const,
+			taxStatus: currentTaxStatus,
 			holdings: results.results.map((r: any) => ({ cusip: r[0], qty: r[8] })).filter((h: any) => h.qty > 0),
 			startYear,
 			endYear,
@@ -238,6 +243,15 @@
 						<select id="ladder-type" bind:value={currentType} class="w-full rounded-lg border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm">
 							<option value="tips-manual">TIPS Bond Calculator (Holdings-based)</option>
 							<option value="simple-income">Simple Income Projection (Target only)</option>
+						</select>
+					</div>
+
+					<div class="space-y-2">
+						<label for="tax-status" class="block text-[10px] font-black uppercase tracking-wider text-slate-500">Tax Treatment</label>
+						<select id="tax-status" bind:value={currentTaxStatus} class="w-full rounded-lg border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm">
+							<option value="taxable">Taxable Brokerage (Normal)</option>
+							<option value="tax-free">Tax-Free (Roth IRA/401k)</option>
+							<option value="deferred">Tax-Deferred (Traditional IRA/401k)</option>
 						</select>
 					</div>
 

@@ -6,6 +6,7 @@ export interface BondLadder {
 	id: string;
 	name: string;
 	type: LadderType;
+	taxStatus: 'taxable' | 'tax-free' | 'deferred';
 	// For 'tips-manual'
 	holdings?: { cusip: string; qty: number }[];
 	// Common / For 'simple-income'
@@ -65,6 +66,7 @@ function createLadderStore() {
 								id: 'legacy-tips',
 								name: 'Existing TIPS Ladder',
 								type: 'tips-manual',
+								taxStatus: 'taxable',
 								holdings: parsed.holdings || [],
 								startYear: parsed.target?.startYear || new Date().getFullYear(),
 								endYear: parsed.target?.endYear || new Date().getFullYear() + 9,
