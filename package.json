@@ -1,8 +1,15 @@
 {
-	"name": "tipsladderbuilder",
-	"private": true,
-	"version": "0.0.1",
+	"name": "@brucedarcus/tips-ladder",
+	"private": false,
+	"version": "0.1.0",
 	"type": "module",
+	"main": "./src/lib/index.ts",
+	"module": "./src/lib/index.ts",
+	"svelte": "./src/lib/index.ts",
+	"exports": {
+		".": "./src/lib/index.ts",
+		"./*": "./src/lib/*"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
