@@ -11,10 +11,9 @@ import TipsImport from './components/TipsImport.svelte';
 
 export const TipsLadderModule: FinancialModule = {
 	id: 'tips-ladder',
-	name: 'TIPS Ladder',
-	description: 'A guaranteed, inflation-protected floor of individual bonds.',
+	name: 'Bond Ladders',
+	description: 'Managed portfolios of individual bonds providing stable, predictable income.',
 	category: 'income',
-
 	store: {
 		subscribe: ladderStore.subscribe,
 		save: ladderStore.save,
